@@ -3,7 +3,7 @@ from pathlib import Path
 from src.train import train
 
 def test_train_tmp(tmp_path: Path):
-    csv = tmp_path / "data.csv"
+    csv = tmp_path / "pay.csv"
     df = pd.DataFrame({
         "jobtitle":["A","B","A","B"], "gender":["Male","Female","Male","Female"],
         "age":[30,40,35,29], "perfeval":[4,3,5,3],
