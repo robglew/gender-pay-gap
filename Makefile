@@ -9,7 +9,8 @@ lint:
 	flake8 src tests || true
 
 test:
-	pytest -q
+	PYTHONPATH=. pytest -q
+
 
 train:
 	python -m src.train --data data/data.csv --out artifacts/

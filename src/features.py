@@ -14,7 +14,8 @@ def compute_targets(df: pd.DataFrame) -> pd.DataFrame:
 def build_preprocessor(categories: dict[str, list[str]] | None = None) -> ColumnTransformer:
     # Build a ColumnTransformer that scales numeric cols and one-hot encodes categoricals.
     # If a categories dict is provided, use fixed category lists for stable train/infer parity.
-    cat = OneHotEncoder(handle_unknown="ignore", categories=None if categories is None else [categories[c] for c in CAT_COLS])
+    cat_param = 'auto' if categories is None else [categories[c] for c in CAT_COLS]
+    cat = OneHotEncoder(handle_unknown="ignore", categories=cat_param)
     num = StandardScaler()
     pre = ColumnTransformer(
         transformers=[
@@ -25,6 +26,7 @@ def build_preprocessor(categories: dict[str, list[str]] | None = None) -> Column
         sparse_threshold=0.0,
     )
     return pre
+
 
 def load_data_csv(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)

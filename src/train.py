@@ -24,9 +24,23 @@ def train(data_path: str, out_dir: str) -> dict:
     X = df[NUM_COLS + CAT_COLS].copy()
     y = df[TARGET_COL].values
 
-    X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=df["gender"] if "gender" in df else None
-    )
+    # --- robust split that works for small datasets with stratify ---
+    strat = df["gender"] if "gender" in df and df["gender"].nunique() >= 2 else None
+    n = len(X)
+    base_float = 0.2
+    base_int = int(np.ceil(base_float * n))
+    if strat is not None:
+        n_classes = df["gender"].nunique()
+        test_n = max(base_int, n_classes)               # ensure >= 1 per class in test
+        test_n = min(test_n, n - 1)                     # leave at least 1 sample for train
+        X_train, X_val, y_train, y_val = train_test_split(
+            X, y, test_size=test_n, random_state=42, stratify=strat
+        )
+    else:
+        X_train, X_val, y_train, y_val = train_test_split(
+            X, y, test_size=base_float, random_state=42, stratify=None
+        )
+
 
     pre = build_preprocessor(categories=None)
     model = LinearRegression()
